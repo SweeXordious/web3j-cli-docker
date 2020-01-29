@@ -22,8 +22,7 @@ In case of any DNS problems, add the `--network=host` and it will most likely wo
 
 ## Limitations
 
-- The image size is 1.23GB and that is because:
-  - the openjdk image alone is 606mb.
+- The image size is 793mb and that is because:
   - gradle is installed on it. So you won't have to download it everytime you want to run a command.
   - a test project is ran during the build so that the dependencies of web3j-cli wont be downloaded everytime.
   
