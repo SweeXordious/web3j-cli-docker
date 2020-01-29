@@ -1,20 +1,16 @@
-FROM ubuntu  AS build
-
-RUN apt-get update && apt-get install -y wget curl
-
-RUN web3j_version=$(curl https://internal.services.web3labs.com/api/versions/latest)  && wget "https://github.com/web3j/web3j-cli/releases/download/v${web3j_version}/web3j-${web3j_version}.tar" && tar --strip-components 1 -xvf "web3j-${web3j_version}.tar" -C  "/opt/"
-
 FROM openjdk:12-alpine
 
-COPY --from=build /opt /opt
+RUN apk update && apk add libstdc++ bash curl && rm -rf /var/cache/apk/*
 
+# Install Web3j-cli
+RUN curl -L https://get.web3j.io | bash
 
+# Install Gradle
 ENV GRADLE_VERSION 5.0
 ENV GRADLE_HOME /usr/local/gradle
 ENV PATH ${PATH}:${GRADLE_HOME}/bin
 ENV GRADLE_USER_HOME /gradle
 
-# Install gradle
 WORKDIR /usr/local
 RUN wget  https://services.gradle.org/distributions/gradle-$GRADLE_VERSION-bin.zip && \
     unzip gradle-$GRADLE_VERSION-bin.zip && \
@@ -22,8 +18,7 @@ RUN wget  https://services.gradle.org/distributions/gradle-$GRADLE_VERSION-bin.z
     ln -s gradle-$GRADLE_VERSION gradle && \
     echo -ne "- with Gradle $GRADLE_VERSION\n" >> /root/.built
 
-RUN apk update && apk add libstdc++ bash && rm -rf /var/cache/apk/*
+# Create a test project to download the dependencies
+RUN $HOME/.web3j/web3j new -n test -o /tmp -p testp  && rm -rf /tmp/test
 
-RUN /opt/bin/web3j new -n test -o /tmp -p testp  && rm -rf /tmp/test
-
-ENTRYPOINT ["/opt/bin/web3j"]
+ENTRYPOINT ["/root/.web3j/web3j"]
