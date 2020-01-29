@@ -8,7 +8,7 @@ FROM openjdk:11
 
 COPY --from=build /opt /opt
 
-RUN apt-get update && apt-get install -y gradle && && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y gradle && rm -rf /var/lib/apt/lists/*
 
 RUN /opt/bin/web3j new -n test -o /tmp -p testp  && rm -rf /tmp/test
 
